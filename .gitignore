@@ -1,3 +1,4 @@
 .idea
 .terraform
 .terraform.lock.hcl
+aws-ebs-csi-driver-trust-policy.json
