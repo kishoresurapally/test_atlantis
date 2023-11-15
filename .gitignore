@@ -2,3 +2,5 @@
 .terraform
 .terraform.lock.hcl
 aws-ebs-csi-driver-trust-policy.json
+values.yaml
+atlantis.yaml
