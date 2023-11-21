@@ -4,3 +4,7 @@
 aws-ebs-csi-driver-trust-policy.json
 values.yaml
 atlantis.yaml
+Chart.yaml
+terraform.tfstate.backup
+atlantis-4.17.3.tgz
+values1.yaml
