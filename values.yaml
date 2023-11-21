@@ -7,96 +7,143 @@
 # atlantisUrl: http://10.0.0.0
 
 # Replace this with your own repo allowlist:
-orgWhitelist: "github.com/kishoresurapally/*"
+orgWhitelist: github.com/kishoresurapally/*
 github:
   user: kishoresurapally
-  token: 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
-  secret: a4722f50f2a9a9e3c37a7c31494329d5e217e55828dca63e7b94488d1196576d
-repoConfig: |
- ---
-  repos:
-  - id: /.*/
-    branch: /.*/
-    workflow: myworkflow
-    apply_requirements: [approved, mergeable]
-    allowed_overrides: [apply_requirements, workflow, delete_source_branch_on_merge]
-    allowed_workflows: [myworkflow]
-    allow_custom_workflows: true
-  workflows:
-    myworkflow:
-      plan:
-        steps:
-        - run: echo "In Terraform Init and Plan"
-        - init
-        - plan:
-            extra_args: ["-lock=", "false"]
-      apply:
-        steps:
-        - run: echo "In Terraform Apply"
-        - apply
+  token: abcd
+  secret: efgh
 
-# logLevel: "debug"
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  apiVersion: networking.k8s.io/v1
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  pathType : ImplementationSpecific
+  path: /*  # / for nginx
+  ##  this is in case we want several paths under the same host, with different backend services
+  #  paths:
+  #    - path: "/path1"
+  #      service: test1
+  #      port:
+  #    - path: "/path2"
+  #      service: test2
+  #      port:
+  # pathType: ImplementationSpecific
+  host: my-atlantis.example.com
 
-# If using GitHub, specify like the following:
-# github: {}
-# github:
-#   user: foo
-#   token: bar
-#   secret: baz
-# GitHub Enterprise only:
-#   hostname: github.your.org
-# (The chart will perform the base64 encoding for you for values that are stored in secrets.)
+  ## in case we need several hosts:
+  hosts:
+  #   - host: chart-example.local
+  #     paths: ["/"]
+  #     service: chart-example1
+  #   - host: chart-example.local2
+  #     service: chart-example1
+  #     paths: ["/lala"]
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+  labels: {}
 
-# If using a GitHub App, please enter your values as follows:
-# githubApp:
-#   id: 123456
-#   slug: foo
-#   key: |
-#     -----BEGIN PRIVATE KEY-----
-#     ...
-#     -----END PRIVATE KEY-----
-#   secret: baz
-# (The chart will perform the base64 encoding for you for values that are stored in secrets.)
+webhook_ingress:
+  enabled: false  # true to create secondary webhook.
+  ingressClassName:
+  apiVersion: ""
+  annotations: {}
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  path: /*  # / for nginx
+  ## this is in case we want several paths under the same host, with different backend services
+  #  paths:
+  #    - path: "/path1"
+  #      service: test1
+  #      port:
+  #    - path: "/path2"
+  #      service: test2
+  #      port:
+  pathType: ImplementationSpecific
+  host:
 
-# If using GitLab, specify like the following:
-# gitlab:
-#   user: foo
-#   token: bar
-#   secret: baz
-# GitLab Enterprise only:
-#   hostname: gitlab.your.org
-# (The chart will perform the base64 encoding for you for values that are stored in secrets.)
+  ## in case we need several hosts:
+  hosts:
+  #   - host: chart-example.local
+  #     paths: ["/"]
+  #     service: chart-example1
+  #   - host: chart-example.local2
+  #     service: chart-example1
+  #     paths: ["/lala"]
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+  labels: {}
 
-# If using Bitbucket, there are two approachs, Bitbucket Server, deployed in your own infrastructure and Cloud available at (https://Bitbucket.org)
+  ## Allow to override the /etc/ssl/certs/ca-certificates.cer with your custom one
+  # You have to create a secret `my-ca-certificates`
+  # customPem: my-ca-certificates
+  # logLevel: "debug"
+  # If using GitHub, specify like the following:
+  # github: {}
+  # github:
+  #   user: foo
+  #   token: bar
+  #   secret: baz
+  # GitHub Enterprise only:
+  #   hostname: github.your.org
+  # (The chart will perform the base64 encoding for you for values that are stored in secrets.)
 
-# Bitbucket Server, specify like the following:
-# bitbucket:
-#   user: foo
-#   token: bar
-#   secret: baz
-#   baseURL: https://bitbucket.yourorganization.com
+  # If using a GitHub App, please enter your values as follows:
+  # githubApp:
+  #   id: 123456
+  #   slug: foo
+  #   key: |
+  #     -----BEGIN PRIVATE KEY-----
+  #     ...
+  #     -----END PRIVATE KEY-----
+  #   secret: baz
+  # (The chart will perform the base64 encoding for you for values that are stored in secrets.)
 
-# Bitbucket Cloud, specify like the following:
-# bitbucket:
-#   user: # The recommended here is genarate a service user on your cloud environment, but yes, you can live on the edge using your own user :)
-#   token: # Create an APP PASSWORD to the user
-# Base URL are not needed here, but keep in mind to provide an IP Whitelist as the Atlantis documentation
-# (The chart will perform the base64 encoding for you for values that are stored in secrets.)
+  # If using GitLab, specify like the following:
+  # gitlab:
+  #   user: foo
+  #   token: bar
+  #   secret: baz
+  # GitLab Enterprise only:
+  #   hostname: gitlab.your.org
+  # (The chart will perform the base64 encoding for you for values that are stored in secrets.)
 
-# If using Azure DevOps, specify like the following:
-# azuredevops:
-#   user: foo
-#   token: bar
-#   webhookUser: foo
-#   webhookPassword: baz
-# (The chart will perform the base64 encoding for you for values that are stored in secrets.)
+  # If using Bitbucket, there are two approachs, Bitbucket Server, deployed in your own infrastructure and Cloud available at (https://Bitbucket.org)
 
-# If managing secrets outside the chart for the webhook, use this variable to reference the secret name
-# vcsSecretName: 'mysecret'
+  # Bitbucket Server, specify like the following:
+  # bitbucket:
+  #   user: foo
+  #   token: bar
+  #   secret: baz
+  #   baseURL: https://bitbucket.yourorganization.com
 
-# When referencing Terraform modules in private repositories, it may be helpful
-# (necessary?) to use redirection in a .gitconfig like so:
-# gitconfig: |
+  # Bitbucket Cloud, specify like the following:
+  # bitbucket:
+  #   user: # The recommended here is genarate a service user on your cloud environment, but yes, you can live on the edge using your own user :)
+  #   token: # Create an APP PASSWORD to the user
+  # Base URL are not needed here, but keep in mind to provide an IP Whitelist as the Atlantis documentation
+  # (The chart will perform the base64 encoding for you for values that are stored in secrets.)
+
+  # If using Azure DevOps, specify like the following:
+  # azuredevops:
+  #   user: foo
+  #   token: bar
+  #   webhookUser: foo
+  #   webhookPassword: baz
+  # (The chart will perform the base64 encoding for you for values that are stored in secrets.)
+
+  # If managing secrets outside the chart for the webhook, use this variable to reference the secret name
+  # vcsSecretName: 'mysecret'
+
+  # When referencing Terraform modules in private repositories, it may be helpful
+  # (necessary?) to use redirection in a .gitconfig like so:
+  # gitconfig: |
   # [url "https://YOUR_GH_TOKEN@github.com"]
   #   insteadOf = https://github.com
   # [url "https://YOUR_GH_TOKEN@github.com"]
@@ -105,14 +152,14 @@ repoConfig: |
   #   insteadOf = https://gitlab.com
   # [url "https://oauth2:YOUR_GITLAB_TOKEN@gitlab.com"]
   #   insteadOf = ssh://git@gitlab.com
-# Source: https://stackoverflow.com/questions/42148841/github-clone-with-oauth-access-token
+  # Source: https://stackoverflow.com/questions/42148841/github-clone-with-oauth-access-token
 
-# If managing secrets outside the chart for the gitconfig, use this variable to reference the secret name
- # gitconfigSecretName: 'mygitconfigsecret'
+  # If managing secrets outside the chart for the gitconfig, use this variable to reference the secret name
+  # gitconfigSecretName: 'mygitconfigsecret'
 
-# When referencing Terraform modules in private repositories or registries (such as Artfactory)
-# configuing a .netrc file for authentication may be required:
-# netrc: |
+  # When referencing Terraform modules in private repositories or registries (such as Artfactory)
+  # configuing a .netrc file for authentication may be required:
+  # netrc: |
   # machine artifactory.myapp.com login YOUR_USERNAME password YOUR_PASSWORD
   # machine bitbucket.myapp.com login YOUR_USERNAME password YOUR_PASSWORD
 
@@ -136,8 +183,8 @@ aws: {}
 
 ## To be used for mounting credential files (when using google provider).
 serviceAccountSecrets:
-  # credentials: <json file as base64 encoded string>
-  # credentials-staging: <json file as base64 encoded string>
+# credentials: <json file as base64 encoded string>
+# credentials-staging: <json file as base64 encoded string>
 
 
 ## -------------------------- ##
@@ -242,16 +289,19 @@ readinessProbe:
   scheme: HTTP
 
 service:
-  type: LoadBalancer
-  port: 8080
-  nodePort: null
-  targetPort: 4141
-  loadBalancerIP: null
+  type: ClusterIP
+  port: 80
+#service:
+#  type: LoadBalancer
+#  port: 8080
+#  nodePort: null
+#  targetPort: 4141
+#  loadBalancerIP: null
 
 podTemplate:
   annotations: {}
-    # kube2iam example:
-    # iam.amazonaws.com/role: role-arn
+  # kube2iam example:
+  # iam.amazonaws.com/role: role-arn
   labels: {}
 
 # It is not recommended to run atlantis as root
@@ -270,83 +320,14 @@ statefulSet:
 ## Optionally customize the terminationGracePeriodSeconds
 # terminationGracePeriodSeconds: 60
 
-ingress:
-  enabled: true
-  ingressClassName:
-  apiVersion: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /*  # / for nginx
-##  this is in case we want several paths under the same host, with different backend services
-#  paths:
-#    - path: "/path1"
-#      service: test1
-#      port:
-#    - path: "/path2"
-#      service: test2
-#      port:
-  pathType: ImplementationSpecific
-  host:
-
-## in case we need several hosts:
-  hosts:
-  #   - host: chart-example.local
-  #     paths: ["/"]
-  #     service: chart-example1
-  #   - host: chart-example.local2
-  #     service: chart-example1
-  #     paths: ["/lala"]
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-  labels: {}
-
-webhook_ingress:
-  enabled: false  # true to create secondary webhook.
-  ingressClassName:
-  apiVersion: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /*  # / for nginx
-## this is in case we want several paths under the same host, with different backend services
-#  paths:
-#    - path: "/path1"
-#      service: test1
-#      port:
-#    - path: "/path2"
-#      service: test2
-#      port:
-  pathType: ImplementationSpecific
-  host:
-
-## in case we need several hosts:
-  hosts:
-  #   - host: chart-example.local
-  #     paths: ["/"]
-  #     service: chart-example1
-  #   - host: chart-example.local2
-  #     service: chart-example1
-  #     paths: ["/lala"]
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-  labels: {}
-
-## Allow to override the /etc/ssl/certs/ca-certificates.cer with your custom one
-# You have to create a secret `my-ca-certificates`
-# customPem: my-ca-certificates
 
 resources: {}
   # requests:
   #   memory: 1Gi
   #   cpu: 100m
-  # limits:
-  #   memory: 1Gi
-  #   cpu: 100m
+# limits:
+#   memory: 1Gi
+#   cpu: 100m
 
 ## Path to the data directory for the volumeMount
 atlantisDataDirectory: /atlantis-data
@@ -369,7 +350,7 @@ replicaCount: 1
 
 ## test container details
 test:
-  enabled: true
+  enabled: false
   image: bats/bats
   imageTag: 1.9.0
   annotations: {}
@@ -566,4 +547,3 @@ redis: {}
 
 # Set lifecycle hooks https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
 lifecycle: {}
-
